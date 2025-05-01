@@ -22,4 +22,10 @@ module "cae" {
   infrastructure_resource_group_name = "infra-rg"
   infrastructure_subnet_id           = "subnet-id"
   log_analytics_workspace_id         = "log-analytics-workspace-id"
+
+  certificate = {
+    name        = "cert-name"
+    blob_base64 = "base64-encoded-certificate"
+    password    = "certificate-password"
+  }
 }
