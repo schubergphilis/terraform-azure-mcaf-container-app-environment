@@ -44,6 +44,7 @@ variable "log_analytics_workspace_id" {
   type        = string
   description = "(Optional) The ID for the Log Analytics Workspace to link this Container Apps Managed Environment to."
   nullable    = true
+  default = null
 }
 
 variable "workload_profile" {
