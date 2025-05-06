@@ -9,7 +9,7 @@ terraform {
   }
 }
 
-module "cae" {
+module "container_app_environment" {
   source              = "../.."
   name                = "my-cae"
   resource_group_name = "my-rg"

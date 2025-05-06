@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.10.5"
+  required_version = ">= 1.9"
 
   required_providers {
     azurerm = {
@@ -9,7 +9,7 @@ terraform {
   }
 }
 
-module "cae" {
+module "container_app_environment" {
   source              = "../.."
   name                = "my-cae"
   resource_group_name = "my-rg"

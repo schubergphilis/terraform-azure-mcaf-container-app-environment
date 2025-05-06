@@ -42,7 +42,7 @@ variable "zone_redundancy_enabled" {
 
 variable "log_analytics_workspace_id" {
   type        = string
-  description = "The ID of the Log Analytics Workspace to use for the Container Apps Managed Environment. Changing this forces a new resource to be created."
+  description = "(Optional) The ID for the Log Analytics Workspace to link this Container Apps Managed Environment to."
   nullable    = true
 }
 
