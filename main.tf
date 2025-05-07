@@ -3,12 +3,16 @@ resource "azurerm_container_app_environment" "this" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-
   infrastructure_subnet_id           = var.infrastructure_subnet_id
   infrastructure_resource_group_name = var.infrastructure_resource_group_name
   internal_load_balancer_enabled     = var.internal_load_balancer_enabled
-  log_analytics_workspace_id         = var.log_analytics_workspace_id
   zone_redundancy_enabled            = var.zone_redundancy_enabled
+
+  # Apply log_analytics_workspace_id only when logs_destination is 'log-analytics'
+  log_analytics_workspace_id = var.logs_destination == "log-analytics" ? var.log_analytics_workspace_id : null
+  
+  # Set logs_destination if specified
+  logs_destination = var.logs_destination
 
   workload_profile {
     name                  = var.workload_profile.name

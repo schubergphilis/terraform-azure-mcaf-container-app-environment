@@ -40,11 +40,21 @@ variable "zone_redundancy_enabled" {
   default     = true
 }
 
+variable "logs_destination" {
+  type        = string
+  description = "(Optional) Where the application logs will be saved for this Container Apps Managed Environment. Possible values include 'log-analytics' and 'azure-monitor'."
+  default     = null
+  validation {
+    condition     = var.logs_destination == null ? true : contains(["log-analytics", "azure-monitor"], var.logs_destination)
+    error_message = "The logs_destination value must be either 'log-analytics', 'azure-monitor', or null."
+  }
+}
+
 variable "log_analytics_workspace_id" {
   type        = string
-  description = "(Optional) The ID for the Log Analytics Workspace to link this Container Apps Managed Environment to."
+  description = "(Optional) The ID for the Log Analytics Workspace to link this Container Apps Managed Environment to. Required if logs_destination is set to 'log-analytics'. Cannot be set if logs_destination is set to 'azure-monitor'."
   nullable    = true
-  default = null
+  default     = null
 }
 
 variable "workload_profile" {
