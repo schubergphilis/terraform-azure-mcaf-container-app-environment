@@ -21,10 +21,10 @@ resource "azurerm_container_app_environment" "this" {
 }
 
 resource "azurerm_container_app_environment_certificate" "custom_domain_certificate" {
-  count = var.certificate != null ? 1 : 0
+  count = length(var.certificates)
 
-  name                         = var.certificate.name != null ? var.certificate.name : "${var.name}-cert"
-  certificate_blob_base64      = var.certificate.blob_base64
-  certificate_password         = var.certificate.password
+  name                         = var.certificates[count.index].name != null ? var.certificates[count.index].name : "${var.name}-cert-${count.index}"
+  certificate_blob_base64      = var.certificates[count.index].blob_base64
+  certificate_password         = var.certificates[count.index].password
   container_app_environment_id = azurerm_container_app_environment.this.id
 }

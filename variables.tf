@@ -73,11 +73,12 @@ variable "workload_profile" {
   }
 }
 
-variable "certificate" {
-  type = object({
+variable "certificates" {
+  description = "List of certificates to be used. Each certificate object must have a blob_base64 property, and can optionally have name and password."
+  type = list(object({
     name        = optional(string)
     blob_base64 = string
     password    = optional(string, "")
-  })
-  default = null
+  }))
+  default = []
 }
