@@ -13,11 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Task
-        uses: arduino/setup-task@v2
-
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
 
       - name: Run unit tests
-        run: task test
+        run: |
+          terraform init -backend=false
+          terraform test
