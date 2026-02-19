@@ -43,12 +43,12 @@ mock_provider "azurerm" {
 }
 
 variables {
-  name                          = "cae-public-test"
-  resource_group_name           = "rg-test"
-  location                      = "westeurope"
-  infrastructure_subnet_id      = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-test/providers/Microsoft.Network/virtualNetworks/vnet-test/subnets/snet-test"
-  logs_destination              = "log-analytics"
-  log_analytics_workspace_id    = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-test/providers/Microsoft.OperationalInsights/workspaces/law-test"
+  name                           = "cae-public-test"
+  resource_group_name            = "rg-test"
+  location                       = "westeurope"
+  infrastructure_subnet_id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-test/providers/Microsoft.Network/virtualNetworks/vnet-test/subnets/snet-test"
+  logs_destination               = "log-analytics"
+  log_analytics_workspace_id     = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-test/providers/Microsoft.OperationalInsights/workspaces/law-test"
   internal_load_balancer_enabled = false
 }
 

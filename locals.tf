@@ -15,7 +15,7 @@ locals {
         }
       },
       var.workload_profiles
-    ) : k => {
+      ) : k => {
       workload_profile_type = v.workload_profile_type
       minimum_count         = v.workload_profile_type == "Consumption" ? null : v.minimum_count
       maximum_count         = v.workload_profile_type == "Consumption" ? null : v.maximum_count
