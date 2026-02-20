@@ -5,7 +5,7 @@ Terraform module for Azure Container App Environments following MCAF (Microsoft 
 ## Features
 
 - **Security-first defaults**: Internal load balancer, mutual TLS, and zone redundancy enabled by default
-- **Container Apps submodule**: Deploy container apps directly via the module
+- **(Standalone) Container Apps submodule**: Deploy container apps directly via the module
 - **Workload profiles**: Support for dedicated compute profiles
 - **Storage mounts**: Azure Files storage integration
 - **Custom domains**: Environment-level custom DNS suffix support
@@ -54,6 +54,29 @@ module "container_app_environment" {
         target_port = 80
       }
     }
+  }
+}
+```
+
+### Without Container App Environment (Only Container App)
+
+```hcl
+module "container_app" {
+  source        = "git::https://github.com/schubergphilis/terraform-azure-mcaf-container-app-environment.git//modules/container-app?ref=vx.x.x"
+  name          = "my-api"
+  revision_mode = "Single"
+
+  template = {
+    containers = [{
+      name   = "api"
+      image  = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+      cpu    = 0.5
+      memory = "1Gi"
+    }]
+  }
+
+  ingress = {
+    target_port = 80
   }
 }
 ```
