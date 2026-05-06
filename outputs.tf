@@ -44,7 +44,7 @@ output "cae_sys_mi_principal_id" {
 }
 
 output "ca_sys_mi_principal_id" {
-  value = module.container_app.system_managed_identity_principal_id
+  value = module.container_app["vector"].system_managed_identity_principal_id
   description = "The system managed identity principal ID of the Container App."
 }
 
