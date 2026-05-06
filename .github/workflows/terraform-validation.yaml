@@ -37,7 +37,6 @@ jobs:
         id: lint
         run: |
           echo "Checking ."
-          tflint --init
           tflint --format compact
 
           for d in examples/*/; do
