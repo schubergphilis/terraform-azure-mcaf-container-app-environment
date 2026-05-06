@@ -38,12 +38,12 @@ output "platform_reserved_dns_ip_address" {
   description = "The platform reserved DNS IP address for the Container App Environment."
 }
 
-output "cae_sys_mi_principal_id" {
+output "container_app_env_sys_mi_principal_id" {
   value = azurerm_container_app_environment.this.identity[0].principal_id
   description = "The system managed identity principal ID of the Container App Environment."
 }
 
-output "ca_sys_mi_principal_ids" {
+output "container_app_sys_mi_principal_ids" {
   value       = { for k, v in module.container_app : k => v.system_managed_identity_principal_id }
   description = "The system managed identity principal IDs of all Container Apps."
 }
