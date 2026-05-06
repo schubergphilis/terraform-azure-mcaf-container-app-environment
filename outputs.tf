@@ -58,3 +58,8 @@ output "container_app_outbound_ip_addresses" {
   }
   description = "A map of container app names to their outbound IP addresses."
 }
+
+output "container_app_environment_system_principal" {
+  value = azurerm_container_app_environment.this.identity[0].principal_id
+  description = "A list with the principal id(s) of the container app environment."
+}
