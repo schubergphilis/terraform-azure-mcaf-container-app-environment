@@ -38,6 +38,11 @@ output "platform_reserved_dns_ip_address" {
   description = "The platform reserved DNS IP address for the Container App Environment."
 }
 
+output "system_managed_identity_principal_id" {
+  value = azurerm_container_app_environment.this.identity[0].principal_id
+  description = "The system managed identity principal ID of the Container App Environment."
+}
+
 output "container_app_ids" {
   value = {
     for k, v in module.container_app : k => v.id
@@ -57,9 +62,4 @@ output "container_app_outbound_ip_addresses" {
     for k, v in module.container_app : k => v.outbound_ip_addresses
   }
   description = "A map of container app names to their outbound IP addresses."
-}
-
-output "container_app_environment_system_principal" {
-  value = azurerm_container_app_environment.this.identity[0].principal_id
-  description = "A list with the principal id(s) of the container app environment."
 }
