@@ -39,7 +39,7 @@ output "platform_reserved_dns_ip_address" {
 }
 
 output "system_managed_identity_principal_id" {
-  value = azurerm_container_app_environment.this.identity[0].principal_id
+  value = azurerm_container_app_environment.this.identity
   description = "The system managed identity principal ID of the Container App Environment."
 }
 
