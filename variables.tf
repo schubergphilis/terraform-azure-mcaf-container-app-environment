@@ -72,6 +72,20 @@ variable "infrastructure_resource_group_name" {
   description = "The name of the resource group for the platform-managed infrastructure resources."
 }
 
+variable "identity" {
+  type = object({
+    type         = string
+    identity_ids = optional(list(string), [])
+  })
+  default     = null
+  description = "Identity configuration for the Container App Environment"
+
+  validation {
+    condition     = var.identity == null || contains(["SystemAssigned", "UserAssigned", "SystemAssigned, UserAssigned"], var.identity.type)
+    error_message = "identity.type must be 'SystemAssigned', 'UserAssigned', or 'SystemAssigned, UserAssigned'."
+  }
+}
+
 variable "workload_profiles" {
   type = map(object({
     workload_profile_type = string
