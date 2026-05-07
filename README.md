@@ -1,48 +1,166 @@
 # terraform-azure-mcaf-container-app-environment
+
+Terraform module for Azure Container App Environments following MCAF (Microsoft Cloud Adoption Framework) patterns.
+
+## Features
+
+- **Security-first defaults**: Internal load balancer, mutual TLS, and zone redundancy enabled by default
+- **(Standalone) Container Apps submodule**: Deploy container apps directly via the module
+- **Workload profiles**: Support for dedicated compute profiles
+- **Storage mounts**: Azure Files storage integration
+- **Custom domains**: Environment-level custom DNS suffix support
+- **Certificates**: Upload and manage environment certificates
+- **Comprehensive testing**: Unit tests using Terraform's native test framework
+
+## Usage
+
+### Basic Example
+
+```hcl
+module "container_app_environment" {
+  source = "github.com/schubergphilis/terraform-azure-mcaf-container-app-environment"
+
+  name                       = "cae-example"
+  resource_group_name        = azurerm_resource_group.example.name
+  location                   = "westeurope"
+  infrastructure_subnet_id   = azurerm_subnet.example.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.example.id
+}
+```
+
+### With Container Apps
+
+```hcl
+module "container_app_environment" {
+  source = "github.com/schubergphilis/terraform-azure-mcaf-container-app-environment"
+
+  name                       = "cae-example"
+  resource_group_name        = azurerm_resource_group.example.name
+  location                   = "westeurope"
+  infrastructure_subnet_id   = azurerm_subnet.example.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.example.id
+
+  container_apps = {
+    "api" = {
+      revision_mode = "Single"
+      template = {
+        containers = [{
+          name   = "api"
+          image  = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+          cpu    = 0.5
+          memory = "1Gi"
+        }]
+      }
+      ingress = {
+        target_port = 80
+      }
+    }
+  }
+}
+```
+
+### Without Container App Environment (Only Container App)
+
+```hcl
+module "container_app" {
+  source        = "git::https://github.com/schubergphilis/terraform-azure-mcaf-container-app-environment.git//modules/container-app?ref=vx.x.x"
+  name          = "my-api"
+  revision_mode = "Single"
+
+  template = {
+    containers = [{
+      name   = "api"
+      image  = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+      cpu    = 0.5
+      memory = "1Gi"
+    }]
+  }
+
+  ingress = {
+    target_port = 80
+  }
+}
+```
+
+## Security Defaults
+
+| Setting | Default | Rationale |
+|---------|---------|-----------|
+| `internal_load_balancer_enabled` | `true` | No public exposure by default |
+| `mutual_tls_enabled` | `true` | Service-to-service encryption |
+| `zone_redundancy_enabled` | `true` | High availability for production |
+| Container app `external_enabled` | `false` | Internal-only by default |
+| Container app `allow_insecure_connections` | `false` | Force HTTPS |
+
+All secure defaults can be overridden when needed.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 4.16 |
+| terraform | >= 1.9 |
+| azurerm | >= 4.16, < 5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | ~> 4.16 |
+| azurerm | >= 4.16, < 5.0 |
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| container_app | ./modules/container-app | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
 | [azurerm_container_app_environment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment) | resource |
-| [azurerm_container_app_environment_certificate.custom_domain_certificate](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment_certificate) | resource |
+| [azurerm_container_app_environment_certificate.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment_certificate) | resource |
+| [azurerm_container_app_environment_custom_domain.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment_custom_domain) | resource |
+| [azurerm_container_app_environment_storage.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment_storage) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_infrastructure_resource_group_name"></a> [infrastructure\_resource\_group\_name](#input\_infrastructure\_resource\_group\_name) | Name of the platform-managed resource group created for the Managed Environment to host infrastructure resources. Changing this forces a new resource to be created. | `string` | n/a | yes |
-| <a name="input_infrastructure_subnet_id"></a> [infrastructure\_subnet\_id](#input\_infrastructure\_subnet\_id) | The existing Subnet to use for the Container Apps Control Plane. Changing this forces a new resource to be created.<br/><br/>The Subnet must have a /21 or larger address space. | `string` | n/a | yes |
-| <a name="input_location"></a> [location](#input\_location) | Specifies the supported Azure location where the Container App Environment is to exist. Changing this forces a new resource to be created. | `string` | n/a | yes |
-| <a name="input_name"></a> [name](#input\_name) | The name of the Container Apps Managed Environment. Changing this forces a new resource to be created. | `string` | n/a | yes |
-| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group in which the Container App Environment is to be created. Changing this forces a new resource to be created. | `string` | n/a | yes |
-| <a name="input_certificates"></a> [certificates](#input\_certificates) | List of certificates to be used. Each certificate object must have a blob\_base64 property, and can optionally have name and password. | <pre>list(object({<br/>    name        = optional(string)<br/>    blob_base64 = string<br/>    password    = optional(string, "")<br/>  }))</pre> | `[]` | no |
-| <a name="input_internal_load_balancer_enabled"></a> [internal\_load\_balancer\_enabled](#input\_internal\_load\_balancer\_enabled) | Should the Container Environment operate in Internal Load Balancing Mode? Defaults to false. Changing this forces a new resource to be created. | `bool` | `false` | no |
-| <a name="input_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#input\_log\_analytics\_workspace\_id) | (Optional) The ID for the Log Analytics Workspace to link this Container Apps Managed Environment to. Required if logs\_destination is set to 'log-analytics'. Cannot be set if logs\_destination is set to 'azure-monitor'. | `string` | `null` | no |
-| <a name="input_logs_destination"></a> [logs\_destination](#input\_logs\_destination) | (Optional) Where the application logs will be saved for this Container Apps Managed Environment. Possible values include 'log-analytics' and 'azure-monitor'. | `string` | `null` | no |
-| <a name="input_workload_profile"></a> [workload\_profile](#input\_workload\_profile) | The name and type of the workload profile.<br/>Defaults to Consumption. | <pre>object({<br/>    name = string<br/>    type = string<br/>  })</pre> | <pre>{<br/>  "name": "Consumption",<br/>  "type": "Consumption"<br/>}</pre> | no |
-| <a name="input_zone_redundancy_enabled"></a> [zone\_redundancy\_enabled](#input\_zone\_redundancy\_enabled) | Should the Container App Environment be created with Zone Redundancy enabled? Defaults to true. Changing this forces a new resource to be created. | `bool` | `true` | no |
+| name | The name of the Container App Environment. | `string` | n/a | yes |
+| resource_group_name | The name of the resource group in which to create the Container App Environment. | `string` | n/a | yes |
+| location | The Azure region where the Container App Environment will be created. | `string` | n/a | yes |
+| infrastructure_subnet_id | The ID of the subnet to use for the Container App Environment infrastructure. Must be a /21 or larger address space. | `string` | n/a | yes |
+| internal_load_balancer_enabled | Whether the Container App Environment should use an internal load balancer. Defaults to true for security. | `bool` | `true` | no |
+| zone_redundancy_enabled | Whether zone redundancy is enabled for the Container App Environment. Defaults to true for high availability. | `bool` | `true` | no |
+| mutual_tls_enabled | Whether mutual TLS authentication is enabled for service-to-service communication. Defaults to true for security. | `bool` | `true` | no |
+| logs_destination | The destination for logs. Valid values are 'log-analytics' or 'azure-monitor'. Set to null to disable. | `string` | `null` | no |
+| log_analytics_workspace_id | The ID of the Log Analytics Workspace to send logs to. Required when logs_destination is 'log-analytics'. | `string` | `null` | no |
+| workload_profiles | A map of workload profiles for the Container App Environment. | `map(object)` | `{}` | no |
+| certificates | A list of certificates to upload to the Container App Environment. | `list(object)` | `[]` | no |
+| storage | A map of storage configurations for the Container App Environment. | `map(object)` | `{}` | no |
+| custom_domain | Custom domain configuration for the Container App Environment. | `object` | `null` | no |
+| container_apps | A map of container apps to create in this environment. | `map(object)` | `{}` | no |
+| tags | A map of tags to assign to the resources. | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_container_app_environment_id"></a> [container\_app\_environment\_id](#output\_container\_app\_environment\_id) | The ID of the Container App Environment. |
+| id | The ID of the Container App Environment. |
+| name | The name of the Container App Environment. |
+| default_domain | The default domain of the Container App Environment. |
+| static_ip_address | The static IP address of the Container App Environment. |
+| container_app_ids | A map of container app names to their IDs. |
+| container_app_fqdns | A map of container app names to their FQDNs. |
 <!-- END_TF_DOCS -->
+
+## Examples
+
+- [Basic](./examples/basic) - Minimal internal environment
+- [Advanced](./examples/advanced) - Full-featured with container apps, storage, and workload profiles
+- [Public](./examples/public) - Public-facing environment with external ingress, CORS, and mixed workloads
+
+## License
+
+MIT

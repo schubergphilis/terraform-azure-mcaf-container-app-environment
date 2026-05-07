@@ -1,0 +1,22 @@
+name: "terraform-test"
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform-test-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Run unit tests
+        run: |
+          terraform init -backend=false
+          terraform test
