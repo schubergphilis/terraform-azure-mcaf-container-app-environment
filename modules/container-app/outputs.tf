@@ -32,8 +32,3 @@ output "custom_domain_verification_id" {
   value       = azurerm_container_app.this.custom_domain_verification_id
   description = "The custom domain verification ID for the Container App."
 }
-
-output "system_managed_identity_principal_id" {
-  value = azurerm_container_app.this.identity[0].principal_id
-  description = "The system managed identity principal ID of the Container App."
-}

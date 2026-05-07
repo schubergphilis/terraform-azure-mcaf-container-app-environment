@@ -43,11 +43,6 @@ output "container_app_env_sys_mi_principal_id" {
   description = "The system managed identity principal ID of the Container App Environment."
 }
 
-output "container_app_sys_mi_principal_ids" {
-  value       = { for k, v in module.container_app : k => v.system_managed_identity_principal_id }
-  description = "The system managed identity principal IDs of all Container Apps."
-}
-
 output "container_app_ids" {
   value = {
     for k, v in module.container_app : k => v.id
