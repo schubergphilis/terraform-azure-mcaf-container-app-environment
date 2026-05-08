@@ -38,6 +38,13 @@ output "platform_reserved_dns_ip_address" {
   description = "The platform reserved DNS IP address for the Container App Environment."
 }
 
+output "certificate_ids" {
+  value = {
+    for k, v in azurerm_container_app_environment_certificate.this : k => v.id
+  }
+  description = "A map of certificate names to their IDs."
+}
+
 output "container_app_ids" {
   value = {
     for k, v in module.container_app : k => v.id

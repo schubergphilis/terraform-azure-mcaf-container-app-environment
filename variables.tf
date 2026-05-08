@@ -48,7 +48,7 @@ variable "logs_destination" {
   description = "The destination for logs. Valid values are 'log-analytics' or 'azure-monitor'. Set to null to disable."
 
   validation {
-    condition     = var.logs_destination == null || contains(["log-analytics", "azure-monitor"], var.logs_destination)
+    condition     = var.logs_destination == null ? true : contains(["log-analytics", "azure-monitor"], var.logs_destination)
     error_message = "logs_destination must be 'log-analytics', 'azure-monitor', or null."
   }
 }
@@ -91,13 +91,24 @@ variable "workload_profiles" {
 }
 
 variable "certificates" {
-  type = list(object({
-    name        = optional(string)
-    blob_base64 = string
+  type = map(object({
+    blob_base64 = optional(string)
     password    = optional(string, "")
+    key_vault = optional(object({
+      identity            = string
+      key_vault_secret_id = string
+    }))
   }))
-  default     = []
-  description = "A list of certificates to upload to the Container App Environment. Each certificate needs a blob_base64 value, and optionally a name and password."
+  default     = {}
+  description = "A map of certificates to upload to the Container App Environment. The map key is used as the certificate name. Provide either blob_base64 (with optional password) or key_vault reference, not both. Note: sensitive values (blob_base64, password) are marked sensitive at the resource level."
+
+  validation {
+    condition = alltrue([
+      for k, v in var.certificates :
+      (v.blob_base64 != null) != (v.key_vault != null)
+    ])
+    error_message = "Each certificate must specify either blob_base64 or key_vault, but not both."
+  }
 }
 
 variable "storage" {
