@@ -18,7 +18,7 @@ resource "azurerm_container_app_environment" "this" {
       identity_ids = identity.value.identity_ids
     }
   }
-  
+
   dynamic "workload_profile" {
     for_each = local.workload_profiles
     content {
