@@ -33,6 +33,9 @@ jobs:
         id: fmt
         run: terraform fmt -check -recursive
 
+      - name: Terraform Lint Init
+        run: tflint --init
+
       - name: Terraform Lint
         id: lint
         run: |

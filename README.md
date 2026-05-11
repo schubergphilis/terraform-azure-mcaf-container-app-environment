@@ -9,6 +9,7 @@ Terraform module for Azure Container App Environments following MCAF (Microsoft 
 - **Workload profiles**: Support for dedicated compute profiles
 - **Storage mounts**: Azure Files storage integration
 - **Custom domains**: Environment-level custom DNS suffix support
+- **Certificates**: Upload and manage environment certificates
 - **Comprehensive testing**: Unit tests using Terraform's native test framework
 
 ## Usage
@@ -99,13 +100,13 @@ All secure defaults can be overridden when needed.
 | Name | Version |
 |------|---------|
 | terraform | >= 1.9 |
-| azurerm | ~> 4.16 |
+| azurerm | >= 4.16, < 5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| azurerm | ~> 4.16 |
+| azurerm | >= 4.16, < 5.0 |
 
 ## Modules
 
@@ -118,6 +119,7 @@ All secure defaults can be overridden when needed.
 | Name | Type |
 |------|------|
 | [azurerm_container_app_environment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment) | resource |
+| [azurerm_container_app_environment_certificate.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment_certificate) | resource |
 | [azurerm_container_app_environment_custom_domain.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment_custom_domain) | resource |
 | [azurerm_container_app_environment_storage.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_app_environment_storage) | resource |
 
@@ -132,9 +134,10 @@ All secure defaults can be overridden when needed.
 | internal_load_balancer_enabled | Whether the Container App Environment should use an internal load balancer. Defaults to true for security. | `bool` | `true` | no |
 | zone_redundancy_enabled | Whether zone redundancy is enabled for the Container App Environment. Defaults to true for high availability. | `bool` | `true` | no |
 | mutual_tls_enabled | Whether mutual TLS authentication is enabled for service-to-service communication. Defaults to true for security. | `bool` | `true` | no |
-| logs_destination | The destination for logs. Valid values are 'log-analytics' or 'azure-monitor'. Set to null to disable. | `string` | `"log-analytics"` | no |
+| logs_destination | The destination for logs. Valid values are 'log-analytics' or 'azure-monitor'. Set to null to disable. | `string` | `null` | no |
 | log_analytics_workspace_id | The ID of the Log Analytics Workspace to send logs to. Required when logs_destination is 'log-analytics'. | `string` | `null` | no |
 | workload_profiles | A map of workload profiles for the Container App Environment. | `map(object)` | `{}` | no |
+| certificates | A list of certificates to upload to the Container App Environment. | `list(object)` | `[]` | no |
 | storage | A map of storage configurations for the Container App Environment. | `map(object)` | `{}` | no |
 | custom_domain | Custom domain configuration for the Container App Environment. | `object` | `null` | no |
 | container_apps | A map of container apps to create in this environment. | `map(object)` | `{}` | no |
