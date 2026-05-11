@@ -11,6 +11,14 @@ resource "azurerm_container_app_environment" "this" {
   log_analytics_workspace_id                  = var.logs_destination == "log-analytics" ? var.log_analytics_workspace_id : null
   dapr_application_insights_connection_string = var.dapr_application_insights_connection_string
 
+  dynamic "identity" {
+    for_each = var.identity != null ? [var.identity] : []
+    content {
+      type         = identity.value.type
+      identity_ids = identity.value.identity_ids
+    }
+  }
+
   dynamic "workload_profile" {
     for_each = local.workload_profiles
     content {
