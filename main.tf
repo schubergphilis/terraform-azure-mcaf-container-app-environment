@@ -24,6 +24,23 @@ resource "azurerm_container_app_environment" "this" {
   tags = local.tags
 }
 
+resource "azurerm_container_app_environment_certificate" "this" {
+  for_each = var.certificates
+
+  name                         = each.key
+  container_app_environment_id = azurerm_container_app_environment.this.id
+  certificate_blob_base64      = each.value.key_vault == null ? sensitive(each.value.blob_base64) : null
+  certificate_password         = each.value.key_vault == null ? sensitive(each.value.password) : null
+
+  dynamic "certificate_key_vault" {
+    for_each = each.value.key_vault != null ? [each.value.key_vault] : []
+    content {
+      identity            = certificate_key_vault.value.identity
+      key_vault_secret_id = certificate_key_vault.value.key_vault_secret_id
+    }
+  }
+}
+
 resource "azurerm_container_app_environment_storage" "this" {
   for_each = var.storage
 
